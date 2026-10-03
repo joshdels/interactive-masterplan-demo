@@ -57,24 +57,178 @@ map.addControl(
   "top-right",
 );
 
-const geolocate = new maplibregl.GeolocateControl({
-  positionOptions: {
-    enableHighAccuracy: true,
-    timeout: 20000,
-    maximumAge: 0,
-  },
+class GPSControl {
+  onAdd(map) {
+    this.map = map;
+    this.watchId = null;
+    this.marker = null;
+    this.accuracyMarker = null;
+    this.tracking = false;
+    this.firstPosition = true;
 
-  trackUserLocation: true,
-  showUserLocation: true,
-  showAccuracyCircle: false,
-  showUserHeading: true,
+    this.container = document.createElement("div");
+    this.container.className = "maplibregl-ctrl maplibregl-ctrl-group";
 
-  fitBoundsOptions: {
-    maxZoom: 18,
-  },
-});
+    this.button = document.createElement("button");
+    this.button.type = "button";
+    this.button.title = "Show my location";
 
-map.addControl(geolocate, "top-right");
+    // Location icon
+    this.button.innerHTML = `
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <circle cx="12" cy="12" r="3"></circle>
+        <circle cx="12" cy="12" r="8"></circle>
+        <path d="M12 2V4"></path>
+        <path d="M12 20V22"></path>
+        <path d="M2 12H4"></path>
+        <path d="M20 12H22"></path>
+      </svg>
+    `;
+
+    this.button.addEventListener("click", () => {
+      if (this.tracking) {
+        this.stopTracking();
+      } else {
+        this.startTracking();
+      }
+    });
+
+    this.container.appendChild(this.button);
+
+    return this.container;
+  }
+
+  startTracking() {
+    if (!navigator.geolocation) {
+      alert("GPS location is not supported by this browser.");
+      return;
+    }
+
+    this.button.title = "Locating...";
+    this.button.disabled = true;
+
+    this.watchId = navigator.geolocation.watchPosition(
+      (position) => {
+        const { latitude, longitude, accuracy } = position.coords;
+
+        console.log("GPS Location");
+        console.log("Latitude:", latitude);
+        console.log("Longitude:", longitude);
+        console.log("Accuracy:", `${Math.round(accuracy)} meters`);
+
+        const location = [longitude, latitude];
+
+        if (!this.marker) {
+          const markerElement = document.createElement("div");
+
+          markerElement.style.width = "18px";
+          markerElement.style.height = "18px";
+          markerElement.style.borderRadius = "50%";
+          markerElement.style.background = "#4285F4";
+          markerElement.style.border = "3px solid white";
+          markerElement.style.boxShadow = "0 1px 5px rgba(0,0,0,0.5)";
+
+          this.marker = new maplibregl.Marker({
+            element: markerElement,
+          })
+            .setLngLat(location)
+            .addTo(this.map);
+        } else {
+          this.marker.setLngLat(location);
+        }
+
+        if (this.firstPosition) {
+          this.map.flyTo({
+            center: location,
+            zoom: 18,
+            pitch: 0,
+            bearing: 0,
+            duration: 1500,
+          });
+
+          this.firstPosition = false;
+        }
+
+        this.tracking = true;
+        this.button.disabled = false;
+        this.button.title = `GPS active · ±${Math.round(accuracy)} m`;
+      },
+
+      (error) => {
+        console.error("GPS error:", error.code, error.message);
+
+        this.button.disabled = false;
+        this.tracking = false;
+        this.button.title = "Show my location";
+
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            alert(
+              "Location permission was denied.\n\n" +
+                "Please allow Location access for this website in your browser settings.",
+            );
+            break;
+
+          case error.POSITION_UNAVAILABLE:
+            alert(
+              "Your GPS location is currently unavailable. " +
+                "Make sure Location/GPS is turned on.",
+            );
+            break;
+
+          case error.TIMEOUT:
+            alert(
+              "GPS took too long to respond. " +
+                "Try moving outside or near a window.",
+            );
+            break;
+
+          default:
+            alert("Unable to determine your location.");
+        }
+      },
+
+      {
+        enableHighAccuracy: true,
+        maximumAge: 0,
+        timeout: 30000,
+      },
+    );
+  }
+
+  stopTracking() {
+    if (this.watchId !== null) {
+      navigator.geolocation.clearWatch(this.watchId);
+      this.watchId = null;
+    }
+
+    this.tracking = false;
+    this.firstPosition = true;
+
+    this.button.title = "Show my location";
+
+    if (this.marker) {
+      this.marker.remove();
+      this.marker = null;
+    }
+  }
+
+  onRemove() {
+    this.stopTracking();
+
+    this.container.remove();
+    this.map = undefined;
+  }
+}
 
 class HomeControl {
   onAdd(map) {
@@ -180,18 +334,6 @@ class ThreeDControl {
   }
 }
 
+map.addControl(new GPSControl(), "top-right");
 map.addControl(new HomeControl(), "top-right");
 map.addControl(new ThreeDControl(), "top-right");
-
-geolocate.on("geolocate", (event) => {
-  const { latitude, longitude, accuracy } = event.coords;
-
-  console.log("GPS Location");
-  console.log("Latitude:", latitude);
-  console.log("Longitude:", longitude);
-  console.log("Accuracy:", `${Math.round(accuracy)} meters`);
-});
-
-geolocate.on("error", (error) => {
-  console.error("GPS error:", error.message);
-});

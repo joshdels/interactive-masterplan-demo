@@ -49,7 +49,6 @@ nav h1 {
   line-height: 1.2;
 }
 
-
 #map {
   width: 100%;
   height: calc(100dvh - 64px);
@@ -66,13 +65,24 @@ nav h1 {
 .maplibregl-ctrl-group button {
   width: 32px;
   height: 32px;
+
   background-color: #ffffff;
+  color: var(--text-primary) !important;
+
   font-family: inherit;
   font-weight: 500;
+
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 .maplibregl-ctrl-group button:hover {
   background-color: var(--control-hover);
+}
+
+.maplibregl-ctrl-group button svg {
+  color: var(--text-primary);
+  stroke: currentColor;
 }
 
 .maplibregl-ctrl-top-right {
