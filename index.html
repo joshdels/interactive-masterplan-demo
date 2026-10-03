@@ -2,21 +2,30 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <title>Interactive Master Plan</title>
-    <link
-      href="https://unpkg.com/maplibre-gl@latest/dist/maplibre-gl.css"
-      rel="stylesheet"
-    />
-    <script></script>
-  </head>
-  <body>
+
+    <link rel="icon" type="image/png" href="data/logo.png" />
+    <link rel="apple-touch-icon" href="data/logo.png" />
     <link
       rel="stylesheet"
       href="https://unpkg.com/maplibre-gl@^6.11.2/dist/maplibre-gl.css"
     />
+
     <link rel="stylesheet" href="styles.css" />
-    <div id="map" style="height: 100vh"></div>
+  </head>
+
+  <body>
+    <nav>
+      <img src="data/logo.png" alt="Company logo" />
+
+      <h1>Company Name</h1>
+    </nav>
+
+    <main id="map"></main>
+
     <script type="module" src="index.js"></script>
   </body>
 </html>
