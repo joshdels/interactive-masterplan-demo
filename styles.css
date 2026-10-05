@@ -62,9 +62,9 @@ nav h1 {
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
 }
 
-.maplibregl-ctrl-group button {
-  width: 32px;
-  height: 32px;
+.maplibregl-ctrl-group > button {
+  width: 34px;
+  height: 34px;
 
   background-color: #ffffff;
   color: var(--text-primary) !important;
@@ -74,15 +74,142 @@ nav h1 {
 
   -webkit-appearance: none;
   appearance: none;
+  cursor: pointer;
+  touch-action: manipulation;
 }
 
-.maplibregl-ctrl-group button:hover {
+.maplibregl-ctrl-group > button svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
+.maplibregl-ctrl-group > button.text-control {
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.maplibregl-ctrl-group > button.is-active {
+  background: #e8f4fb;
+  color: var(--accent) !important;
+}
+
+.maplibregl-ctrl-group > button:focus-visible,
+.basemap-option:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.maplibregl-ctrl-group > button:hover {
   background-color: var(--control-hover);
 }
 
-.maplibregl-ctrl-group button svg {
+.location-marker {
+  width: 18px;
+  height: 18px;
+  border: 3px solid #ffffff;
+  border-radius: 50%;
+  background: #4285f4;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.5);
+}
+
+.basemap-control {
+  position: relative;
+  overflow: visible;
+}
+
+.basemap-gallery {
+  position: absolute;
+  top: 0;
+  right: calc(100% + 8px);
+  width: 300px;
+  padding: 10px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  border: 1px solid var(--nav-border);
+  border-radius: 4px;
+  background: #ffffff;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.22);
+}
+
+.basemap-gallery[hidden] {
+  display: none;
+}
+
+.maplibregl-ctrl-group .basemap-option {
+  width: 100%;
+  height: auto;
+  min-width: 0;
+  min-height: 0;
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  border: 2px solid transparent;
+  border-radius: 3px;
+  background: transparent;
   color: var(--text-primary);
-  stroke: currentColor;
+  font: inherit;
+  font-size: 0.7rem;
+  line-height: 1.15;
+  text-align: center;
+  white-space: normal;
+  cursor: pointer;
+  appearance: none;
+}
+
+.maplibregl-ctrl-group .basemap-option:hover {
+  background: var(--control-hover);
+}
+
+.maplibregl-ctrl-group .basemap-option[aria-checked="true"] {
+  border-color: var(--accent);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.basemap-thumbnail {
+  width: 100%;
+  flex: 0 0 52px;
+  position: relative;
+  height: 52px;
+  margin-bottom: 5px;
+  display: block;
+  overflow: hidden;
+  border: 1px solid #c8c8c8;
+  border-radius: 2px;
+  background-color: #f5f5f5;
+}
+
+.basemap-thumbnail--blank {
+  background: #ffffff;
+}
+
+.basemap-thumbnail--google-hybrid {
+  background:
+    linear-gradient(145deg, transparent 43%, #f5c15f 44% 47%, transparent 48%),
+    linear-gradient(35deg, transparent 47%, #e9ecef 48% 52%, transparent 53%),
+    radial-gradient(circle at 28% 30%, #587a45 0 18%, transparent 19%),
+    linear-gradient(120deg, #263f2e 0 43%, #244f68 44% 57%, #4d6741 58%);
+}
+
+.basemap-thumbnail--osm {
+  background:
+    linear-gradient(125deg, transparent 43%, #ef8d65 44% 48%, transparent 49%),
+    linear-gradient(30deg, transparent 46%, #ffffff 47% 54%, transparent 55%),
+    linear-gradient(90deg, #b8ddb1 0 42%, #a9d9e8 43% 57%, #eeeade 58%);
+}
+
+.basemap-label {
+  min-width: 0;
+  display: block;
+  overflow-wrap: anywhere;
 }
 
 .maplibregl-ctrl-top-right {
@@ -145,13 +272,59 @@ nav h1 {
     height: calc(100dvh - 54px);
   }
 
-  .maplibregl-ctrl-group button {
-    width: 34px;
-    height: 34px;
+  .maplibregl-ctrl-group > button {
+    width: 30px;
+    height: 30px;
+  }
+
+  .maplibregl-ctrl-group > button svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .maplibregl-ctrl-group > button.text-control {
+    font-size: 0.68rem;
   }
 
   .maplibregl-ctrl-top-right {
     top: 7px;
     right: 7px;
+  }
+
+  .basemap-gallery {
+    width: min(270px, calc(100vw - 52px));
+    padding: 8px;
+    gap: 5px;
+  }
+
+  .basemap-thumbnail {
+    flex-basis: 42px;
+    height: 42px;
+  }
+
+  .maplibregl-ctrl-group .basemap-option {
+    padding: 3px;
+    font-size: 0.64rem;
+  }
+}
+
+@media (max-height: 480px) and (orientation: landscape) {
+  nav {
+    height: 46px;
+    padding-block: 4px;
+  }
+
+  nav img {
+    width: 34px;
+    height: 34px;
+  }
+
+  #map {
+    height: calc(100dvh - 46px);
+  }
+
+  .maplibregl-ctrl-group > button {
+    width: 28px;
+    height: 28px;
   }
 }
